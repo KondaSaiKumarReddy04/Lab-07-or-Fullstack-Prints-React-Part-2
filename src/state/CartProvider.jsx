@@ -1,7 +1,7 @@
 import React, { useReducer, useContext } from 'react'
 
 // Initialize the context
-const CartContext = React.createContext()
+export const CartContext = React.createContext()
 
 // Definte the default state
 const initialState = {
@@ -69,7 +69,7 @@ const cartReducer = (state, action) => {
 }
 
 // Define the provider
-const CartProvider = ({ children }) => {
+export  const CartProvider = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState)
 
   // Remove an item from the cart
@@ -85,12 +85,24 @@ const CartProvider = ({ children }) => {
   // todo Update the quantity of an item in the cart
   const updateItemQuantity = (product, quantity) => {
     // todo 
-  }
+    if (quantity <= 0) {
+      removeFromCart(product);
+    } else {
+      dispatch({
+        type: UPDATE_ITEM_QUANTITY,
+        payload: { _id: product._id, quantity },
+      });
+    }
+  };
 
   // todo Get the total price of all items in the cart
   const getCartTotal = () => {
     // todo
-  }
+    return state.allItems.reduce((total, itemId) => {
+      const item = state.itemsById[itemId];
+      return total + item.price * item.quantity;
+    }, 0);
+  };
 
   const getCartItems = () => {
     return state.allItems.map((itemId) => state.itemsById[itemId]) ?? [];
@@ -112,4 +124,5 @@ const CartProvider = ({ children }) => {
   )
 }
 
-export { CartProvider, CartContext }
+
+export default CartProvider;
